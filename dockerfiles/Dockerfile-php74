@@ -1,0 +1,74 @@
+FROM php:7.4-apache
+
+# Install server software
+RUN apt update; \
+    apt install -y \
+        build-essential \
+        curl \
+        ghostscript \
+        imagemagick \
+        libfreetype6-dev \
+		libicu-dev \
+		libjpeg-dev \
+		libmagickwand-dev \
+		libwebp-dev \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libonig-dev \
+        libzip-dev \
+        mariadb-client \
+        nano \
+        jpegoptim optipng pngquant gifsicle \
+        unzip \
+        vim \
+        zip \
+        ;
+
+# Install PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
+    exif \
+    intl \
+    mbstring \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    zip \
+    ;
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
+RUN docker-php-ext-install gd
+
+RUN pecl install imagick-3.6.0; \
+    docker-php-ext-enable imagick;
+
+# Clean-up
+RUN apt-get purge -y --auto-remove; \
+	rm -rf /var/lib/apt/lists/*;
+
+# Enable Apache modules
+RUN a2enmod expires headers rewrite ssl
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Update PHP settings
+COPY php74.ini /usr/local/etc/php/php.ini
+
+# Add custom config to files
+RUN { \
+		echo '' \
+        echo 'alias ls="ls -lh --color=auto"'; \
+		echo 'alias lh="ls -ld .* --color=auto"'; \
+		echo 'alias la="ls -alh --color=auto"'; \
+	} >> ~/.bashrc
+
+RUN { \
+        echo 'set t_Co=256'; \
+        echo 'set encoding=utf-8'; \
+        echo 'set backspace=indent,eol,start'; \
+        echo 'syntax on'; \
+        echo 'set number relativenumber'; \
+        echo 'set cursorline'; \
+        echo 'set mouse+=a'; \
+        echo 'colorscheme desert'; \
+    } >> ~/.vimrc

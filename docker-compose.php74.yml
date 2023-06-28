@@ -1,0 +1,46 @@
+---
+version: '3.7'
+
+services:
+
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile-php74
+    # Change container name for each project
+    container_name: php_app
+    restart: unless-stopped
+    ports:
+      - 80:80
+    # Change network name for each project
+    networks:
+      - app_ntwrk
+    volumes:
+      - ./public_html:/var/www/html
+
+  mysqldb:
+    image: mysql:8
+    # Change container name for each project
+    container_name: mysql_db
+    restart: unless-stopped
+    ports:
+    - 3306:3306
+    environment:
+      MYSQL_DATABASE: example_db
+      MYSQL_USER: example_user
+      MYSQL_PASSWORD: example_pass
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    # Change network name for each project
+    networks:
+      - app_ntwrk
+    volumes:
+      - ./db_data:/var/lib/mysql
+
+volumes:
+  public_html:
+  db_data:
+
+networks:
+  # Change network name for each project
+  app_ntwrk:
+    driver: bridge
