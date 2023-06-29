@@ -1,0 +1,97 @@
+FROM php:5.6-apache
+# FROM --platform=linux/amd64 php:5.6-apache
+
+# Update software repository sources to prevent errors
+RUN { \
+        echo "deb [trusted=yes] http://archive.debian.org/debian stretch main non-free contrib"; \
+        echo "deb-src [trusted=yes] http://archive.debian.org/debian/ stretch main non-free contrib"; \
+        echo "deb [trusted=yes] http://archive.debian.org/debian-security/ stretch/updates main non-free contrib"; \
+    } > /etc/apt/sources.list; apt update;
+
+# RUN sed -i "s/deb.debian/archive.debian/g" /etc/apt/sources.list; \
+#     sed -i "s/security.debian/archive.debian/g" /etc/apt/sources.list; \
+#     sed -i "s/^deb /deb [trusted=yes] /g" /etc/apt/sources.list;
+
+RUN apt install -yqq \
+    curl \
+    # imagemagick \
+    libtool make g++ \
+    libmcrypt-dev libmcrypt4 libpng-dev libzip-dev \
+    zlib1g-dev libicu-dev \
+    nano \
+    software-properties-common \
+    vim \
+    wget \
+    zip \
+    ;
+
+# Install PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
+    exif \
+    intl \
+    mbstring \
+    mcrypt \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    ;
+
+RUN docker-php-ext-configure zip --with-libzip; \
+    docker-php-ext-install zip
+
+RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/lib; \
+    docker-php-ext-install gd
+
+# Ref - https://stackoverflow.com/a/76542933
+RUN wget --no-check-certificate https://imagemagick.org/archive/releases/ImageMagick-6.9.3-10.tar.xz && \
+    tar -xf ImageMagick-6.9.3-10.tar.xz && \
+    cd ImageMagick-6.9.3-10 && \
+    ./configure && \
+    make && \
+    make install && \
+    echo "export LD_LIBRARY_PATH='/usr/local/lib'" >> ~/.bashrc && \
+    rm -rf ImageMagick-6*
+
+RUN wget --no-check-certificate https://pecl.php.net/get/imagick-3.1.2.tgz && \
+    tar -xzf imagick-3.1.2.tgz && \
+    cd imagick-3.1.2 && \
+    phpize && \
+    ./configure --with-imagick=/usr/local && \
+    make && \
+    make install && \
+    rm -rf imagick-3*
+
+RUN echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini
+
+# Update PHP settings
+COPY php74.ini /usr/local/etc/php/php.ini
+
+# Clean-up
+RUN apt purge --auto-remove -y; \
+    rm -rf /var/lib/apt/lists/*;
+
+# Enable Apache modules
+RUN a2enmod expires headers rewrite ssl
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add custom config to files
+RUN { \
+		echo ""; \
+        echo "alias ls='ls -lh --color=auto'"; \
+		echo "alias lh='ls -ld .* --color=auto'"; \
+		echo "alias la='ls -alh --color=auto'"; \
+        echo "export PS1='\[\e[32m\]\u\[\e[m\]@\[\e[31m\]\h\[\e[m\]: \[\e[34m\]\w\[\e[m\] \n\\$ '"; \
+	} >> ~/.bashrc
+
+RUN { \
+        echo "set t_Co=256"; \
+        echo "set encoding=utf-8"; \
+        echo "set backspace=indent,eol,start"; \
+        echo "syntax on"; \
+        echo "set number relativenumber"; \
+        echo "set cursorline"; \
+        echo "set mouse+=a"; \
+        echo "colorscheme desert"; \
+    } >> ~/.vimrc
