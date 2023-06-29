@@ -56,19 +56,20 @@ COPY php74.ini /usr/local/etc/php/php.ini
 
 # Add custom config to files
 RUN { \
-		echo '' \
-        echo 'alias ls="ls -lh --color=auto"'; \
-		echo 'alias lh="ls -ld .* --color=auto"'; \
-		echo 'alias la="ls -alh --color=auto"'; \
+		echo ""; \
+        echo "alias ls='ls -lh --color=auto'"; \
+		echo "alias lh='ls -ld .* --color=auto'"; \
+		echo "alias la='ls -alh --color=auto'"; \
+        echo "export PS1='\[\e[32m\]\u\[\e[m\]@\[\e[31m\]\h\[\e[m\]: \[\e[34m\]\w\[\e[m\] \\$ '"; \
 	} >> ~/.bashrc
 
 RUN { \
-        echo 'set t_Co=256'; \
-        echo 'set encoding=utf-8'; \
-        echo 'set backspace=indent,eol,start'; \
-        echo 'syntax on'; \
-        echo 'set number relativenumber'; \
-        echo 'set cursorline'; \
-        echo 'set mouse+=a'; \
-        echo 'colorscheme desert'; \
+        echo "set t_Co=256"; \
+        echo "set encoding=utf-8"; \
+        echo "set backspace=indent,eol,start"; \
+        echo "syntax on"; \
+        echo "set number relativenumber"; \
+        echo "set cursorline"; \
+        echo "set mouse+=a"; \
+        echo "colorscheme desert"; \
     } >> ~/.vimrc

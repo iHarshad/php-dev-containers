@@ -35,6 +35,7 @@ services:
       - app_ntwrk
     volumes:
       - ./db_data:/var/lib/mysql
+      - ./dockerfiles/my.cnf:/etc/mysql/my.cnf
 
 volumes:
   public_html:
