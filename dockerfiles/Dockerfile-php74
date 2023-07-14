@@ -2,7 +2,7 @@ FROM php:7.4-apache
 
 # Install server software
 RUN apt update; \
-    apt install -y \
+    apt install -yqq \
         build-essential \
         curl \
         ghostscript \
@@ -57,9 +57,9 @@ COPY php74.ini /usr/local/etc/php/php.ini
 # Add custom config to files
 RUN { \
 		echo ""; \
-        echo "alias ls='ls -lh --color=auto'"; \
+        echo "alias ls='ls -h --color=auto'"; \
 		echo "alias lh='ls -ld .* --color=auto'"; \
-		echo "alias la='ls -alh --color=auto'"; \
+		echo "alias ll='ls -alh --color=auto'"; \
         echo "export PS1='\[\e[32m\]\u\[\e[m\]@\[\e[31m\]\h\[\e[m\]: \[\e[34m\]\w\[\e[m\] \\$ '"; \
 	} >> ~/.bashrc
 

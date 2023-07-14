@@ -1,2 +1,4 @@
 .DS_Store
 db_data/
+public_html
+!public_html/index.php
