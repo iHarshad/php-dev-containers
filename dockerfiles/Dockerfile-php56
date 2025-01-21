@@ -1,4 +1,4 @@
-FROM php:5.6-apache
+FROM docker.io/library/php:5.6-apache
 # FROM --platform=linux/amd64 php:5.6-apache
 
 # Update software repository sources to prevent errors
@@ -78,12 +78,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Add custom config to files
 RUN { \
-		echo ""; \
+        echo ""; \
         echo "alias ls='ls -h --color=auto'"; \
-		echo "alias lh='ls -ld .* --color=auto'"; \
-		echo "alias ll='ls -alh --color=auto'"; \
+        echo "alias lh='ls -ld .* --color=auto'"; \
+        echo "alias ll='ls -alh --color=auto'"; \
         echo "export PS1='\[\e[32m\]\u\[\e[m\]@\[\e[31m\]\h\[\e[m\]: \[\e[34m\]\w\[\e[m\] \n\\$ '"; \
-	} >> ~/.bashrc
+    } >> ~/.bashrc
 
 RUN { \
         echo "set t_Co=256"; \

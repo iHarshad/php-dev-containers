@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM docker.io/library/php:7.4-apache
 
 # Install server software
 RUN apt update; \
@@ -8,10 +8,10 @@ RUN apt update; \
         ghostscript \
         imagemagick \
         libfreetype6-dev \
-		libicu-dev \
-		libjpeg-dev \
-		libmagickwand-dev \
-		libwebp-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libmagickwand-dev \
+        libwebp-dev \
         libpng-dev \
         libjpeg62-turbo-dev \
         libonig-dev \

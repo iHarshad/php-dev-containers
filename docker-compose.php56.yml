@@ -18,7 +18,7 @@ services:
       - ./public_html:/var/www/html
 
   mysqldb:
-    image: mysql:8
+    image: docker.io/library/mysql:8
     # Change container name for each project
     container_name: mysql_db
     restart: unless-stopped
