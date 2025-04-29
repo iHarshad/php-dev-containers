@@ -6,6 +6,7 @@ RUN apt update; \
         build-essential \
         curl \
         ghostscript \
+        gnupg2 \
         imagemagick \
         libfreetype6-dev \
         libicu-dev \
@@ -24,6 +25,10 @@ RUN apt update; \
         zip \
         ;
 
+# Enable ondrej PPAs for Debian
+RUN curl -fsSL https://packages.sury.org/php/README.txt | bash -x
+RUN apt update
+
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
     exif \
@@ -32,6 +37,7 @@ RUN docker-php-ext-install -j$(nproc) \
     mysqli \
     pdo \
     pdo_mysql \
+    pgsql \
     zip \
     ;
 
@@ -56,12 +62,12 @@ COPY php74.ini /usr/local/etc/php/php.ini
 
 # Add custom config to files
 RUN { \
-		echo ""; \
+        echo ""; \
         echo "alias ls='ls -h --color=auto'"; \
-		echo "alias lh='ls -ld .* --color=auto'"; \
-		echo "alias ll='ls -alh --color=auto'"; \
+        echo "alias lh='ls -ld .* --color=auto'"; \
+        echo "alias ll='ls -alh --color=auto'"; \
         echo "export PS1='\[\e[32m\]\u\[\e[m\]@\[\e[31m\]\h\[\e[m\]: \[\e[34m\]\w\[\e[m\] \\$ '"; \
-	} >> ~/.bashrc
+    } >> ~/.bashrc
 
 RUN { \
         echo "set t_Co=256"; \

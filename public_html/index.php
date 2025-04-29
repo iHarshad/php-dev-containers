@@ -1,9 +1,9 @@
 <?php
 
-$host = "mysqldb";
-$dbname = "example_db";
-$user = "example_user";
-$password = "example_pass";
+$host = getenv('DB_HOST') ?: 'mysqldb';
+$dbname = getenv('DB_NAME') ?: 'example_pass';
+$user = getenv('DB_USER') ?: 'example_user';
+$password = getenv('DB_PASS') ?: 'example_pass';
 
 function testMySQLiConnection($host, $user, $password) {
     $mysqliResult = '';
@@ -81,5 +81,7 @@ $pdoResult = testPDOConnection($host, $user, $password);
     <p><?php echo $mysqliResult; ?></p>
     <h2>PDO</h2>
     <p><?php echo $pdoResult; ?></p>
+    <br>
+    <?php phpinfo(); ?>
 </body>
 </html>
